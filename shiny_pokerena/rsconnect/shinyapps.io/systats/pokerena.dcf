@@ -1,0 +1,13 @@
+name: pokerena
+title:
+username:
+account: systats
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2647014
+bundleId: 3483313
+url: https://systats.shinyapps.io/pokerena/
+when: 1596733930.91881
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .Rbuildignore|DESCRIPTION|main.Rmd|NAMESPACE|README.md|README.Rmd|tests/testthat.R|tests/testthat/test-01_fold.R|tests/testthat/data/events.rds|tests/testthat/data/session.rds|man

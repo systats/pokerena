@@ -1,0 +1,161 @@
+---
+# title: "pokerena"
+output: github_document
+---
+
+# Pokerena `r emo::ji("club_suit")` `r emo::ji("diamond_suit")` `r emo::ji("heart_suit")` `r emo::ji("spade_suit")`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, error = F, message = F, fig.path = "man/figures/")
+```
+
+A Poker engine for AI development in R. 
+
+```{r, echo = F}
+# devtools::install_github("hadley/emo")
+pacman::p_load(tidyverse, devtools, crayon)
+load_all()
+
+# keywords <- emo::ji_keyword
+# keywords[stringr::str_detect(names(keywords), "suit")]
+```
+
+
+## Tutorial
+
+This tutorial leads you to start point of poker AI development...
+
+... But first install. 
+
+```{r, eval = F}
+devtools::install_github("systats/pokerena")
+```
+
+
+There are two main ways to deploy a bot, as there are two ways for using the poker backend. 
+
+1. preregister functions in interactive R session
+2. call a separate HTTP API endpoint from a job. 
+
+In general players just return a tibble with an action and amount of chips to bet. 
+
+
+```{r}
+player_call <- function(state_, ...){
+  tibble(chips = state_$to_call, action = "call")
+}
+```
+
+```{r}
+players <- rbind(
+  tibble(name = "call", fun = list(player_call)), # player 1
+  tibble(name = "radnom1", fun = list(player_random)), # player 2
+  tibble(name = "fold", fun = list(player_fold)) # player 4
+) %>% mutate(credit = 100, bb = 2)
+```
+
+```{r, message=T}
+g <- game$new(players, delay = 0)
+g$run()
+```
+
+```{r}
+g$session %>% glimpse
+```
+
+```{r}
+g$events %>% glimpse
+```
+
+
+Similarily a tournament can be set up.
+
+```{r}
+config <- list(
+  credit = 100, # inital stack size, if NULL assumes individual credits
+  max_round = 50, # how many rounds at max should be played
+  bb = 2, # inital big blind
+  bb_rounds = 10, # increase blinds after x hands
+  bb_slope = "linear" # how to increase blinds
+)
+
+tourn <- tournament$new(players, config)
+tourn$run()
+```
+
+
+```{r}
+tourn$games %>% glimpse
+```
+
+```{r}
+tourn$games %>% 
+  transmute(id = 1:n(), result) %>% 
+  unnest("result") %>% 
+  distinct(id, bb) %>% 
+  ggplot(aes(id, bb)) +
+  geom_line()
+```
+
+
+```{r}
+tourn$games %>% 
+  transmute(id = 1:n(), result) %>% 
+  unnest("result") %>% 
+  ggplot(aes(id, credit, colour = name)) + 
+  geom_line()
+```
+
+
+```{r}
+tourn$games %>% 
+  transmute(id = 1:n(), result) %>% 
+  unnest("result") %>% 
+  group_by(id) %>% 
+  mutate(winner_name  = ifelse(winner == 1, name, NA)) %>% 
+  fill(winner_name, .direction = "updown") %>% 
+  ungroup() %>% 
+  group_by(name, winner_name) %>% 
+  summarise(net = sum(net))
+```
+
+
+## Main Dependencies
+
+* `Poker`: generic R poker hand evaluator
+* `Plumber`: serving a local poker server
+* `R6`: class management 
+* `Tidyvrse`: everything else 
+
+## Unit Testing
+
+```{r}
+testthat::test_package("pokerena")
+```
+
+
+## Roadmap
+
+### Engine
+
+- [x] support going allin 
+- [x] poker hand evaluation
+- [x] multiple split and side pots
+- [x] tournament flow
+- [ ] log messages for debugging
+- [ ] unit tests for more situations
+- [ ] improved cli output
+
+
+### AI
+
+- [ ] RL script with replay buffer
+- [ ] support for multiplayer self-play
+- [ ] support replay for MCCFR
+- [ ] tree search and pruning
+
+
+### Analytics
+
+- [ ] Leaderboard
+- [ ] HUD

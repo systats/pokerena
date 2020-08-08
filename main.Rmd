@@ -1,0 +1,193 @@
+---
+title: "main"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Packages
+
+```{r}
+# devtools::install_github("tidyverse/dplyr")
+pacman::p_load(tidyverse, purrr, tidyr, crayon)
+devtools::document()
+devtools::load_all()
+
+# usethis::use_testthat()
+# usethis::use_test("02-splitpot")
+```
+
+
+```{r}
+testthat::test_package("pokerena")
+```
+
+
+
+## Players
+
+```{r}
+players <- rbind(
+  tibble(name = "fish1", fun = list(player_fish)),
+  tibble(name = "fish2", fun = list(player_fish)),
+  tibble(name = "fish3", fun = list(player_allin)),
+  tibble(name = "potman", fun = list(player_api))
+  #tibble(name = "me", fun = list(player_random))
+) %>% mutate(credit = c(50, 50, 100, 100), bb = 2)
+
+p_game <- game$new(players, delay = 0)
+p_game$run(verbose = T)
+p_game$admin$this_task()
+p_game$session %>% glimpse
+p_game$events %>% glimpse
+p_game$result
+# p_game$admin$history
+# p_game$session
+p_game$events %>% View
+p_game$result
+# p_game$players
+```
+
+### Break
+
+```{r}
+player_app <- function(state_, ...){
+  params <- list(...)
+  inp <- params$input
+  if(is.null(inp)) stop("wait for user input")
+  return(inp)
+}
+
+players <- rbind(
+  tibble(name = "random", fun = list(player_random)),
+  tibble(name = "random2", fun = list(player_random)),
+  tibble(name = "me", fun = list(player_app))
+) %>% mutate(credit = 100, bb = 2)
+
+p_game <- game$new(players, delay = 0)
+p_game$step()
+p_game$set_input <- dplyr::tibble(chips = 10, action = "raise")
+p_game$step()
+# p_game$get_state("me")
+# p_game$session
+
+p_game$events
+```
+
+## Step
+
+```{r}
+-players <- rbind(
+  tibble(name = "potman", fun = list(player_api)),
+  tibble(name = "me", fun = list(player_random)),
+  tibble(name = "me2", fun = list(player_random))
+) %>% mutate(credit = 100, bb = 2)
+
+p_game <- game$new(players, delay = 0)
+p_game$run(verbose = T)
+p_game$step(verbose = T, step = 1)
+p_game$events %>% select(name, action)
+p_game$session
+```
+
+
+
+```{r}
+players <- rbind(
+  tibble(name = "caller", fun = list(player_call)),
+  tibble(name = "random", fun = list(player_random)),
+  tibble(name = "potman", fun = list(player_api)),
+  tibble(name = "folder", fun = list(player_fold))
+)
+
+config <- list(
+  credit = 100,
+  max_round = 20, 
+  bb = 2, 
+  bb_rounds = 10, 
+  bb_slope = "linear"
+)
+
+tourn <- tournament$new(players, config)
+tourn$run()
+tourn$games
+```
+
+
+```{r}
+tourn$games %>% 
+  transmute(id = 1:n(), result) %>% 
+  unnest("result") %>% 
+  group_by(name) %>% 
+  mutate(net = cumsum(net)) %>% 
+  ungroup() %>% 
+  ggplot(aes(id, net, colour = name)) + 
+  geom_line()
+
+tourn$games %>% 
+  transmute(id = 1:n(), result) %>% 
+  unnest("result") %>% 
+  group_by(name) %>% 
+  ungroup() %>% 
+  ggplot(aes(id, credit, colour = name)) + 
+  geom_line()
+```
+
+
+# OLD
+
+```{r}
+# tournament <- R6::R6Class("tournament",
+# 
+#   public = list(
+#     
+#     players = NULL,
+#     config = NULL, 
+#     
+#     BB = NULL, 
+#     N_ROUND = 1, 
+#     
+#     games = NULL,
+#     result = NULL,
+#     
+#     initialize = function(players, config){
+#       self$players <- players
+#       self$config <- config
+#       if(!is.null(config$bb)){
+#         self$players$bb <- self$BB <- config$bb
+#       } else {
+#         bb <- self$players[["bb"]][1]
+#         if(is.null(bb)) bb <- 2
+#         self$BB <- bb
+#       }
+#       if(!is.null(config$credit)) self$players$credit <- config$credit
+#       if(is.null(config$max_rounds)) self$config$max_rounds <- 50
+#     }, 
+#   
+#     
+#     run = function(){
+#       
+#       while(self$N_ROUND <= self$config$max_round){
+#         
+#         p <- game$new(self$players, delay = 0)
+#         p$step()
+#         self$games <- rbind(self$games, p$export())
+#         
+#         players <- p$players %>% 
+#           dplyr::filter(credit > 0)
+#         
+#         if(nrow(players) == 1) self$N_ROUND <- self$config$max_round + 1
+#         
+#         players$bb <- self$BB
+#         self$players <- rbind(players[-1, ], players[1, ])
+#           
+#         self$N_ROUND <- self$N_ROUND + 1
+#       }
+#     }
+#   )                                
+# )
+```
+
