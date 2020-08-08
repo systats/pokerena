@@ -1,5 +1,5 @@
 
-# Pokerena ♣️ ♦️ ♥️ ♠️
+# Pokerena ♣️ ♦️ ♠️ ♥️
 
 A Poker engine for AI development in R.
 
@@ -30,9 +30,10 @@ player_call <- function(state_, ...){
 
 ``` r
 players <- rbind(
-  tibble(name = "call", fun = list(player_call)), # player 1
-  tibble(name = "radnom1", fun = list(player_random)), # player 2
-  tibble(name = "fold", fun = list(player_fold)) # player 4
+  tibble(name = "caller", fun = list(player_call)), # player 1
+  tibble(name = "radnom", fun = list(player_random)), # player 2
+  tibble(name = "potman", fun = list(player_api)), # player 2
+  tibble(name = "folder", fun = list(player_fold)) # player 4
 ) %>% mutate(credit = 100, bb = 2)
 ```
 
@@ -45,69 +46,70 @@ g$run()
 g$session %>% glimpse
 ```
 
-    ## Rows: 3
-    ## Columns: 24
-    ## $ game_id  <chr> "1596876514991675904", "1596876514991675904", "1596876514991…
-    ## $ time     <chr> "2020-08-08 10:48:34", "2020-08-08 10:48:34", "2020-08-08 10…
-    ## $ name     <chr> "call", "radnom1", "fold"
-    ## $ credit   <dbl> 98, 98, 100
-    ## $ bb       <dbl> 2, 2, 2
-    ## $ seat_id  <int> 1, 2, 3
-    ## $ position <int> 1, 2, 3
-    ## $ state    <dbl> 1, 1, 1
-    ## $ chips    <dbl> 1, 0, 0
-    ## $ to_call  <dbl> 0, 0, 2
-    ## $ s_stake  <dbl> 2, 2, 0
-    ## $ t_stake  <dbl> 2, 2, 0
-    ## $ pot      <dbl> 4, 4, 4
-    ## $ allin    <dbl> 0, 0, 0
-    ## $ folded   <dbl> 0, 1, 1
-    ## $ n_player <int> 3, 3, 3
-    ## $ n_in     <dbl> 1, 1, 1
-    ## $ hand     <chr> "5C 6H", "AC 9D", "7C QC"
-    ## $ board    <chr> "", "", ""
-    ## $ runout   <chr> "", "", ""
-    ## $ winner   <dbl> 1, 0, 0
-    ## $ rank     <dbl> 1, 2, 2
-    ## $ ret      <dbl> 4, 0, 0
-    ## $ net      <dbl> 2, -2, 0
+    ## Rows: 4
+    ## Columns: 25
+    ## $ game_id  <chr> "1596881183657158912", "1596881183657158912", "1596881183657…
+    ## $ time     <chr> "2020-08-08 12:06:23", "2020-08-08 12:06:23", "2020-08-08 12…
+    ## $ name     <chr> "caller", "radnom", "potman", "folder"
+    ## $ credit   <dbl> 65, 98, 65, 100
+    ## $ bb       <dbl> 2, 2, 2, 2
+    ## $ seat_id  <int> 1, 2, 3, 4
+    ## $ position <int> 1, 2, 3, 4
+    ## $ state    <dbl> 4, 4, 4, 4
+    ## $ chips    <dbl> 15, 0, 15, 0
+    ## $ to_call  <dbl> 0, 33, 0, 35
+    ## $ s_stake  <dbl> 15, 0, 15, 0
+    ## $ t_stake  <dbl> 35, 2, 35, 0
+    ## $ pot      <dbl> 72, 72, 72, 72
+    ## $ allin    <dbl> 0, 0, 0, 0
+    ## $ folded   <dbl> 0, 1, 0, 1
+    ## $ n_player <int> 4, 4, 4, 4
+    ## $ n_in     <dbl> 2, 2, 2, 2
+    ## $ hand     <chr> "10D 9C", "AD 8H", "KS KD", "2C 9D"
+    ## $ board    <chr> "10C 4S 3C 5H 6S", "10C 4S 3C 5H 6S", "10C 4S 3C 5H 6S", "10…
+    ## $ runout   <chr> "10C 4S 3C 5H 6S", "10C 4S 3C 5H 6S", "10C 4S 3C 5H 6S", "10…
+    ## $ main     <chr> "One Pair", "High Card", "One Pair", "Straight"
+    ## $ winner   <dbl> 0, 0, 0, 1
+    ## $ rank     <int> 3, 4, 2, 1
+    ## $ ret      <dbl> 0, 0, 72, 0
+    ## $ net      <dbl> -35, -2, 37, 0
 
 ``` r
 g$events %>% glimpse
 ```
 
-    ## Rows: 5
+    ## Rows: 15
     ## Columns: 30
-    ## $ game_id  <chr> "1596876514991675904", "1596876514991675904", "1596876514991…
-    ## $ time     <chr> "2020-08-08 10:48:34", "2020-08-08 10:48:34", "2020-08-08 10…
-    ## $ name     <chr> "call", "radnom1", "fold", "call", "radnom1"
-    ## $ credit   <dbl> 100, 100, 100, 99, 98
-    ## $ bb       <dbl> 2, 2, 2, 2, 2
-    ## $ seat_id  <int> 1, 2, 3, 1, 2
-    ## $ position <int> 1, 2, 3, 1, 2
-    ## $ state    <dbl> 1, 1, 1, 1, 1
-    ## $ chips    <dbl> 1, 2, 0, 1, 0
-    ## $ to_call  <dbl> 2, 2, 2, 1, 0
-    ## $ s_stake  <dbl> 0, 0, 0, 1, 2
-    ## $ t_stake  <dbl> 0, 0, 0, 1, 2
-    ## $ pot      <dbl> 0, 0, 3, 3, 4
-    ## $ allin    <dbl> 0, 0, 0, 0, 0
-    ## $ folded   <dbl> 0, 0, 1, 0, 1
-    ## $ n_player <int> 3, 3, 3, 3, 3
-    ## $ n_in     <dbl> 3, 3, 3, 2, 2
-    ## $ hand     <chr> "", "", "7C QC", "5C 6H", "AC 9D"
-    ## $ board    <chr> "", "", "", "", ""
-    ## $ action   <chr> "sb", "bb", "fold", "call", "fold"
-    ## $ stake    <dbl> 1, 2, 0, 1, 0
-    ## $ t_stake_ <dbl> 1, 2, 0, 2, 2
-    ## $ s_stake_ <dbl> 1, 2, 0, 2, 2
-    ## $ credit_  <dbl> 99, 98, 100, 98, 98
-    ## $ pot_     <dbl> 1, 2, 3, 4, 4
-    ## $ runout   <chr> "", "", "", "", ""
-    ## $ winner   <dbl> 1, 0, 0, 1, 0
-    ## $ rank     <dbl> 1, 2, 2, 1, 2
-    ## $ ret      <dbl> 4, 0, 0, 4, 0
-    ## $ net      <dbl> 2, -2, 0, 2, -2
+    ## $ game_id  <chr> "1596881183657158912", "1596881183657158912", "1596881183657…
+    ## $ time     <chr> "2020-08-08 12:06:23", "2020-08-08 12:06:23", "2020-08-08 12…
+    ## $ name     <chr> "caller", "radnom", "potman", "folder", "caller", "radnom", …
+    ## $ credit   <dbl> 100, 100, 100, 100, 99, 98, 96, 96, 96, 91, 91, 91, 80, 80, …
+    ## $ bb       <dbl> 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+    ## $ seat_id  <int> 1, 2, 3, 4, 1, 2, 1, 3, 1, 1, 3, 1, 1, 3, 1
+    ## $ position <int> 1, 2, 3, 4, 1, 2, 1, 3, 1, 1, 3, 1, 1, 3, 1
+    ## $ state    <dbl> 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4
+    ## $ chips    <dbl> 1, 2, 4, 0, 3, 0, 0, 5, 5, 0, 11, 11, 0, 15, 15
+    ## $ to_call  <dbl> 2, 2, 2, 4, 3, 2, 0, 0, 5, 0, 0, 11, 0, 0, 15
+    ## $ s_stake  <dbl> 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ## $ t_stake  <dbl> 0, 0, 0, 0, 1, 2, 4, 4, 4, 9, 9, 9, 20, 20, 20
+    ## $ pot      <dbl> 0, 0, 3, 7, 7, 10, 10, 10, 15, 20, 20, 31, 42, 42, 57
+    ## $ allin    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ## $ folded   <dbl> 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ## $ n_player <int> 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+    ## $ n_in     <dbl> 4, 4, 4, 4, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2
+    ## $ hand     <chr> "", "", "KS KD", "2C 9D", "10D 9C", "AD 8H", "10D 9C", "KS K…
+    ## $ board    <chr> "", "", "", "", "", "", "10C 4S 3C", "10C 4S 3C", "10C 4S 3C…
+    ## $ action   <chr> "sb", "bb", "raise", "fold", "call", "fold", "check", "raise…
+    ## $ stake    <dbl> 1, 2, 4, 0, 3, 0, 0, 5, 5, 0, 11, 11, 0, 15, 15
+    ## $ t_stake_ <dbl> 1, 2, 4, 0, 4, 2, 4, 9, 9, 9, 20, 20, 20, 35, 35
+    ## $ s_stake_ <dbl> 1, 2, 4, 0, 4, 2, 0, 5, 5, 0, 11, 11, 0, 15, 15
+    ## $ credit_  <dbl> 99, 98, 96, 100, 96, 98, 96, 91, 91, 91, 80, 80, 80, 65, 65
+    ## $ pot_     <dbl> 1, 2, 7, 7, 10, 10, 10, 15, 20, 20, 31, 42, 42, 57, 72
+    ## $ runout   <chr> "10C 4S 3C 5H 6S", "10C 4S 3C 5H 6S", "10C 4S 3C 5H 6S", "10…
+    ## $ winner   <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ## $ rank     <int> 3, 4, 2, 1, 3, 4, 3, 2, 3, 3, 2, 3, 3, 2, 3
+    ## $ ret      <dbl> 0, 0, 72, 0, 0, 0, 0, 72, 0, 0, 72, 0, 0, 72, 0
+    ## $ net      <dbl> -35, -2, 37, 0, -35, -2, -35, 37, -35, -35, 37, -35, -35, 37…
 
 Similarily a tournament can be set up.
 
@@ -121,18 +123,18 @@ config <- list(
 )
 
 tourn <- tournament$new(players, config)
-tourn$run()
+tourn$run(T)
 ```
 
 ``` r
 tourn$games %>% glimpse
 ```
 
-    ## Rows: 34
+    ## Rows: 45
     ## Columns: 4
-    ## $ game_id <chr> "1596876515267985920", "1596876515515056896", "15968765156106…
-    ## $ result  <list> [<tbl_df[3 x 7]>, <tbl_df[3 x 7]>, <tbl_df[3 x 7]>, <tbl_df[…
-    ## $ events  <list> [<tbl_df[10 x 30]>, <tbl_df[5 x 30]>, <tbl_df[7 x 30]>, <tbl…
+    ## $ game_id <chr> "1596879102417853952", "1596879103175256064", "15968791053602…
+    ## $ result  <list> [<tbl_df[4 x 7]>, <tbl_df[4 x 7]>, <tbl_df[4 x 7]>, <tbl_df[…
+    ## $ events  <list> [<tbl_df[6 x 30]>, <tbl_df[13 x 30]>, <tbl_df[12 x 30]>, <tb…
     ## $ log     <list> [<tbl_df[0 x 0]>, <tbl_df[0 x 0]>, <tbl_df[0 x 0]>, <tbl_df[…
 
 ``` r
@@ -144,20 +146,53 @@ tourn$games %>%
   geom_line()
 ```
 
-![](man/figures/unnamed-chunk-10-1.png)<!-- -->
+<img src="man/figures/blind_time-1.png" style="display: block; margin: auto;" />
 
 ``` r
-tourn$games %>% 
+credit <- tourn$games %>% 
   transmute(id = 1:n(), result) %>% 
   unnest("result") %>% 
   ggplot(aes(id, credit, colour = name)) + 
-  geom_line()
+  geom_line() +
+  scale_colour_viridis_d()
+
+net <- tourn$games %>% 
+  transmute(id = 1:n(), result) %>% 
+  unnest("result") %>% 
+  ggplot(aes(id, net, fill = name)) + 
+  geom_col(postion = ggplot2::position_dodge(), alpha = .7, show.legend = F) +
+  scale_fill_viridis_d()
+
+gridExtra::grid.arrange(net, credit, ncol = 2)
 ```
 
-![](man/figures/unnamed-chunk-11-1.png)<!-- -->
+<img src="man/figures/credit_time-1.png" style="display: block; margin: auto;" />
 
 ``` r
-tourn$games %>% 
+ranges <- tourn$games %>% 
+  transmute(id = 1:n(), events) %>% 
+  unnest("events") %>% 
+  filter(hand != "" & action != "fold") %>% 
+  distinct(game_id, name, hand) %>%
+  mutate(hand = hand %>% stringr::str_replace_all("10", "T")) %>% 
+  tidyr::separate(hand, into = c("card1", "card2"), sep = "\\s+") %>% 
+  left_join(pockets_both()) %>% 
+  count(name, value1, value2)
+
+ranges %>% 
+  ggplot(aes(value1, value2, fill = n)) +
+  geom_tile(alpha = .7) +
+  scale_fill_viridis_c() +
+  facet_wrap(~name) #, scales = "free_y" 
+```
+
+<img src="man/figures/unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
+
+``` r
+library(tidygraph)
+library(ggraph)
+
+pay_network <- tourn$games %>% 
   transmute(id = 1:n(), result) %>% 
   unnest("result") %>% 
   group_by(id) %>% 
@@ -165,19 +200,18 @@ tourn$games %>%
   fill(winner_name, .direction = "updown") %>% 
   ungroup() %>% 
   group_by(name, winner_name) %>% 
-  summarise(net = sum(net))
+  summarise(net = sum(net)) %>% 
+  as_tbl_graph()
+
+pay_network %>% 
+  ggraph(layout = 'linear') + #, circular = TRUE
+  geom_edge_arc0(aes(colour = net), arrow = arrow(length = unit(4, 'mm')), width = 1, alpha = .8) +
+  #scale_edge_alpha('Pay direction', guide = 'edge_direction') + 
+  scale_edge_color_viridis(direction = -1) +
+  geom_node_text(aes(label = name))
 ```
 
-    ## # A tibble: 6 x 3
-    ## # Groups:   name [3]
-    ##   name    winner_name   net
-    ##   <chr>   <chr>       <dbl>
-    ## 1 call    call          219
-    ## 2 call    fold          -19
-    ## 3 fold    call          -95
-    ## 4 fold    fold           -5
-    ## 5 radnom1 call         -124
-    ## 6 radnom1 fold           24
+<img src="man/figures/unnamed-chunk-12-1.png" style="display: block; margin: auto;" />
 
 ## Main Dependencies
 

@@ -55,13 +55,13 @@ tournament <- R6::R6Class("poker_tournament",
       self$N_ROUND <- self$N_ROUND + 1
     },
 
-    run = function(){
+    run = function(verbose = F){
 
       while(self$N_ROUND <= self$config$max_round){
 
         ### play one game
         p <- game$new(self$players, delay = 0)
-        p$step()
+        p$run(verbose)
 
         self$games <- rbind(self$games, p$export())
 

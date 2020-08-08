@@ -3,10 +3,10 @@
 output: github_document
 ---
 
-# Pokerena `r emo::ji("club_suit")` `r emo::ji("diamond_suit")` `r emo::ji("heart_suit")` `r emo::ji("spade_suit")`
+# Pokerena `r emo::ji("club_suit")` `r emo::ji("diamond_suit")` `r emo::ji("spade_suit")` `r emo::ji("heart_suit")` 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = T, warning = F, error = F, message = F, fig.path = "man/figures/")
+knitr::opts_chunk$set(echo = T, warning = F, error = F, message = F, fig.path = "man/figures/", fig.align = "center", fig.height = 3, fig.width = 5)
 ```
 
 A Poker engine for AI development in R. 
@@ -15,6 +15,7 @@ A Poker engine for AI development in R.
 # devtools::install_github("hadley/emo")
 pacman::p_load(tidyverse, devtools, crayon)
 load_all()
+ggplot2::theme_set(theme_classic())
 
 # keywords <- emo::ji_keyword
 # keywords[stringr::str_detect(names(keywords), "suit")]
@@ -48,9 +49,10 @@ player_call <- function(state_, ...){
 
 ```{r}
 players <- rbind(
-  tibble(name = "call", fun = list(player_call)), # player 1
-  tibble(name = "radnom1", fun = list(player_random)), # player 2
-  tibble(name = "fold", fun = list(player_fold)) # player 4
+  tibble(name = "caller", fun = list(player_call)), # player 1
+  tibble(name = "radnom", fun = list(player_random)), # player 2
+  tibble(name = "potman", fun = list(player_api)), # player 2
+  tibble(name = "folder", fun = list(player_fold)) # player 4
 ) %>% mutate(credit = 100, bb = 2)
 ```
 
@@ -70,7 +72,7 @@ g$events %>% glimpse
 
 Similarily a tournament can be set up.
 
-```{r}
+```{r, eval = F}
 config <- list(
   credit = 100, # inital stack size, if NULL assumes individual credits
   max_round = 50, # how many rounds at max should be played
@@ -80,7 +82,13 @@ config <- list(
 )
 
 tourn <- tournament$new(players, config)
-tourn$run()
+tourn$run(T)
+```
+
+
+```{r, echo = F}
+# saveRDS(tourn, file = "man/figures/readme_tourn.rds")
+tourn <- readRDS("man/figures/readme_tourn.rds")
 ```
 
 
@@ -88,7 +96,8 @@ tourn$run()
 tourn$games %>% glimpse
 ```
 
-```{r}
+
+```{r blind_time}
 tourn$games %>% 
   transmute(id = 1:n(), result) %>% 
   unnest("result") %>% 
@@ -98,17 +107,49 @@ tourn$games %>%
 ```
 
 
-```{r}
-tourn$games %>% 
+```{r credit_time, fig.height = 3, fig.width = 10}
+credit <- tourn$games %>% 
   transmute(id = 1:n(), result) %>% 
   unnest("result") %>% 
   ggplot(aes(id, credit, colour = name)) + 
-  geom_line()
+  geom_line() +
+  scale_colour_viridis_d()
+
+net <- tourn$games %>% 
+  transmute(id = 1:n(), result) %>% 
+  unnest("result") %>% 
+  ggplot(aes(id, net, fill = name)) + 
+  geom_col(postion = ggplot2::position_dodge(), alpha = .7, show.legend = F) +
+  scale_fill_viridis_d()
+
+gridExtra::grid.arrange(net, credit, ncol = 2)
 ```
 
 
-```{r}
-tourn$games %>% 
+```{r, fig.height=3, fig.width = 10}
+ranges <- tourn$games %>% 
+  transmute(id = 1:n(), events) %>% 
+  unnest("events") %>% 
+  filter(hand != "" & action != "fold") %>% 
+  distinct(game_id, name, hand) %>%
+  mutate(hand = hand %>% stringr::str_replace_all("10", "T")) %>% 
+  tidyr::separate(hand, into = c("card1", "card2"), sep = "\\s+") %>% 
+  left_join(pockets_both()) %>% 
+  count(name, value1, value2)
+
+ranges %>% 
+  ggplot(aes(value1, value2, fill = n)) +
+  geom_tile(alpha = .7) +
+  scale_fill_viridis_c() +
+  facet_wrap(~name) #, scales = "free_y" 
+```
+
+
+```{r, fig.width = 6}
+library(tidygraph)
+library(ggraph)
+
+pay_network <- tourn$games %>% 
   transmute(id = 1:n(), result) %>% 
   unnest("result") %>% 
   group_by(id) %>% 
@@ -116,7 +157,15 @@ tourn$games %>%
   fill(winner_name, .direction = "updown") %>% 
   ungroup() %>% 
   group_by(name, winner_name) %>% 
-  summarise(net = sum(net))
+  summarise(net = sum(net)) %>% 
+  as_tbl_graph()
+
+pay_network %>% 
+  ggraph(layout = 'linear') + #, circular = TRUE
+  geom_edge_arc0(aes(colour = net), arrow = arrow(length = unit(4, 'mm')), width = 1, alpha = .8) +
+  #scale_edge_alpha('Pay direction', guide = 'edge_direction') + 
+  scale_edge_color_viridis(direction = -1) +
+  geom_node_text(aes(label = name))
 ```
 
 
