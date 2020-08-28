@@ -28,14 +28,32 @@ player_allin <- function(s, ...){
   return(dplyr::tibble(chips = s$credit, action = "raise"))
 }
 
+#' player_api
+#' @export
+player_api <- function(s, ...){
+  
+  req <- httr::POST(url = "http://213.152.100.65:3838/our_bots",
+                    body = list(name = "potman", data = s), encode = "json")
+  if (req$status_code == 500){
+    action <- dplyr::tibble(action = "fold", chips = 0)
+  } else {
+    action <- jsonlite::fromJSON(rawToChar(req$content)) %>%
+      dplyr::transmute(action = dplyr::case_when(action ==
+                                                   1 ~ "fold", action == 2 ~ "call", action == 3 ~ "raise"),
+                       chips)
+  }
+  
+  
+  return(action)
+}
+
 #' player_random
 #' @export
-player_random <- function(s, ...){
+player_random <- function (s, ...){
   action <- sample(c("fold", "call", "raise"), 1)
   chips <- 0
-  if(action == "raise") chips <- 10
-  if(s$to_call == 0) action <- "call"
-  
+  if (action == "raise") chips <- sample(s$bb:round(s$credit), 1)
+  if (s$to_call == 0) action <- "call"
   return(dplyr::tibble(chips, action))
 }
 
@@ -68,18 +86,4 @@ player_app <- function(s, ...){
   inp <- params$input
   if(is.null(inp)) stop("wait for user input")
   return(inp)
-}
-
-#' player_api
-#' @export
-player_api <- function(s, ...){
-
-  req <- httr::POST(url = "http://213.152.100.65:3838/our_bots", body = list(name = "potman", data = s), encode = "json")
-
-  if(req$status_code == 500) stop("Bot action could not be retrieved")
-
-  action <- jsonlite::fromJSON(rawToChar(req$content)) %>%
-    dplyr::transmute(action = dplyr::case_when(action == 1 ~ "fold", action == 2 ~ "call", action == 3 ~ "raise"), chips)
-
-  return(action)
 }
