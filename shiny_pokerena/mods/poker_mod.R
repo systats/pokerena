@@ -84,7 +84,7 @@ poker_server <- function(input, output, session){
     input$reload
     players()
 
-    game$state <- poker_game$new(game$players, delay = 0)
+    game$state <- game$new(game$players, delay = 0)
     game$state$step()
   })
 
@@ -115,10 +115,10 @@ poker_server <- function(input, output, session){
     game$state$step()
   })
 
-  output$dev <- renderPrint({
-    shiny::invalidateLater(2000)
-    dplyr::glimpse(game$state$get_state("me"))
-  })
+  # output$dev <- renderPrint({
+  #   shiny::invalidateLater(2000)
+  #   dplyr::glimpse(game$state$get_state("me"))
+  # })
 
   events <- reactive({
     shiny::invalidateLater(2000)

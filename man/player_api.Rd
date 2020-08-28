@@ -4,7 +4,7 @@
 \alias{player_api}
 \title{player_api}
 \usage{
-player_api(state_, ...)
+player_api(s, ...)
 }
 \description{
 player_api

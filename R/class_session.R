@@ -7,20 +7,26 @@ poker_session = R6::R6Class("session",
 
       self$session <- dplyr::tibble(
         game_id = as.character(suppressWarnings(round(as.numeric(nanotime::nanotime(Sys.time()))))),
-        time = as.character(Sys.time())
+        time = as.character(Sys.time()),
+        event_id = 0,
+        action_id = 0
       ) %>%
-        cbind(., self$players %>% dplyr::select(-fun)) %>%
-        dplyr::mutate(
-          seat_id = 1:dplyr::n(),
-          position = 1:dplyr::n(),
-          state = 1,
-          chips = dplyr::case_when(position == 1 ~ bb/2, position == 2 ~ bb, T ~ 0),
-          to_call = bb, s_stake = 0, t_stake = 0, pot = 0,
-          allin = 0, folded = 0,
-          n_player = dplyr::n(),
-          n_in = dplyr::n(),
-          hand = "", board = ""
-        )
+      cbind(., self$players %>% dplyr::select(-fun)) %>%
+      dplyr::mutate(
+        state = 1,
+        seat_id = 1:dplyr::n(),
+        position = 1:dplyr::n(),
+        chips = dplyr::case_when(position == 1 ~ bb/2, position == 2 ~ bb, T ~ 0),
+        to_call = bb, s_stake = 0, t_stake = 0, pot = 0,
+        t_stake_ = chips,
+        s_stake_ = max(chips),
+        credit_ = credit-chips,
+        pot_ = cumsum(chips),
+        allin = 0, folded = 0,
+        n_player = dplyr::n(),
+        n_in = dplyr::n(),
+        hand = "", board = ""
+      )
     },
 
     get_values = function(var){
@@ -104,7 +110,10 @@ poker_session = R6::R6Class("session",
       self$sub_name_value(self$session$name[2], "credit", self$session$bb[2])
 
       self$session$pot <- (self$session$bb[1]/2 + self$session$bb[1])
-      self$session$to_call <- (max(self$session$t_stake) - (self$session$t_stake))
+      self$session$to_call <- (max(self$session$t_stake_) - (self$session$t_stake))
+      self$session$event_id <- 1
+      self$session$action_id <- 1
+      
     },
 
     deal_preflop = function(){

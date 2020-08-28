@@ -1,0 +1,75 @@
+---
+title: "deepQ"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Packages
+
+```{r}
+pacman::p_load(tidyverse, purrr, tidyr)
+```
+
+
+## Data
+
+```{r}
+players <- rbind(
+  tibble(name = "fish", fun = list(player_random)),
+  tibble(name = "call", fun = list(player_call)),
+  tibble(name = "call2", fun = list(player_call))
+  #tibble(name = "me", fun = list(player_random))
+) %>% mutate(credit = c(100, 100, 100), bb = 2)
+
+p_game <- game$new(players, delay = 0)
+p_game$run(verbose = T)
+
+p_game$events %>% glimpse
+p_game$result
+```
+
+```{r}
+get_state_pairs <- function(.x){
+ .x %>% 
+   dplyr::mutate(id = 1:n()) %>% 
+   dplyr::group_by(game_id, name, stake, id) %>% 
+   tidyr::nest(.key = "s") %>% 
+   dplyr::ungroup() %>% 
+   dplyr::mutate(s_ = dplyr::lead(s, 1), t = as.numeric(purrr::map_lgl(s_, is.null)))
+}
+
+pairs <- p_game$events %>% 
+  split(.$name) %>% 
+  map_dfr(get_state_pairs)
+```
+
+```{r}
+pairs$s_[[10]]
+```
+
+
+* main_model (updated every single tournament) -> action model
+* target_model (updated every 10 tournaments) -> reward model 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

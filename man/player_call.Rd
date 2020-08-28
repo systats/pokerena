@@ -4,7 +4,7 @@
 \alias{player_call}
 \title{player_call}
 \usage{
-player_call(state_, ...)
+player_call(s, ...)
 }
 \description{
 player_call

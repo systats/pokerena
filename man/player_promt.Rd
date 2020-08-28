@@ -4,7 +4,7 @@
 \alias{player_promt}
 \title{player_promt}
 \usage{
-player_promt(state_, ...)
+player_promt(s, ...)
 }
 \description{
 player_promt

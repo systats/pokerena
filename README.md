@@ -48,68 +48,68 @@ g$session %>% glimpse
 
     ## Rows: 4
     ## Columns: 25
-    ## $ game_id  <chr> "1596881183657158912", "1596881183657158912", "1596881183657…
-    ## $ time     <chr> "2020-08-08 12:06:23", "2020-08-08 12:06:23", "2020-08-08 12…
+    ## $ game_id  <chr> "1596882299934232064", "1596882299934232064", "1596882299934…
+    ## $ time     <chr> "2020-08-08 12:24:59", "2020-08-08 12:24:59", "2020-08-08 12…
     ## $ name     <chr> "caller", "radnom", "potman", "folder"
-    ## $ credit   <dbl> 65, 98, 65, 100
+    ## $ credit   <dbl> 88, 88, 100, 100
     ## $ bb       <dbl> 2, 2, 2, 2
     ## $ seat_id  <int> 1, 2, 3, 4
     ## $ position <int> 1, 2, 3, 4
-    ## $ state    <dbl> 4, 4, 4, 4
-    ## $ chips    <dbl> 15, 0, 15, 0
-    ## $ to_call  <dbl> 0, 33, 0, 35
-    ## $ s_stake  <dbl> 15, 0, 15, 0
-    ## $ t_stake  <dbl> 35, 2, 35, 0
-    ## $ pot      <dbl> 72, 72, 72, 72
+    ## $ state    <dbl> 3, 3, 3, 3
+    ## $ chips    <dbl> 0, 0, 0, 0
+    ## $ to_call  <dbl> 0, 0, 12, 12
+    ## $ s_stake  <dbl> 0, 0, 0, 0
+    ## $ t_stake  <dbl> 12, 12, 0, 0
+    ## $ pot      <dbl> 24, 24, 24, 24
     ## $ allin    <dbl> 0, 0, 0, 0
-    ## $ folded   <dbl> 0, 1, 0, 1
+    ## $ folded   <dbl> 0, 1, 1, 1
     ## $ n_player <int> 4, 4, 4, 4
-    ## $ n_in     <dbl> 2, 2, 2, 2
-    ## $ hand     <chr> "10D 9C", "AD 8H", "KS KD", "2C 9D"
-    ## $ board    <chr> "10C 4S 3C 5H 6S", "10C 4S 3C 5H 6S", "10C 4S 3C 5H 6S", "10…
-    ## $ runout   <chr> "10C 4S 3C 5H 6S", "10C 4S 3C 5H 6S", "10C 4S 3C 5H 6S", "10…
-    ## $ main     <chr> "One Pair", "High Card", "One Pair", "Straight"
-    ## $ winner   <dbl> 0, 0, 0, 1
-    ## $ rank     <int> 3, 4, 2, 1
-    ## $ ret      <dbl> 0, 0, 72, 0
-    ## $ net      <dbl> -35, -2, 37, 0
+    ## $ n_in     <dbl> 1, 1, 1, 1
+    ## $ hand     <chr> "QH 9C", "3C 5S", "KC 8H", "JC 2D"
+    ## $ board    <chr> "QS 10H 4H 9S", "QS 10H 4H 9S", "QS 10H 4H 9S", "QS 10H 4H 9…
+    ## $ runout   <chr> "QS 10H 4H 9S", "QS 10H 4H 9S", "QS 10H 4H 9S", "QS 10H 4H 9…
+    ## $ main     <chr> "Two Pair", "Board Lead", "High Card", "Board Lead"
+    ## $ winner   <dbl> 1, 0, 0, 0
+    ## $ rank     <dbl> 1, 2, 2, 2
+    ## $ ret      <dbl> 24, 0, 0, 0
+    ## $ net      <dbl> 12, -12, 0, 0
 
 ``` r
 g$events %>% glimpse
 ```
 
-    ## Rows: 15
+    ## Rows: 11
     ## Columns: 30
-    ## $ game_id  <chr> "1596881183657158912", "1596881183657158912", "1596881183657…
-    ## $ time     <chr> "2020-08-08 12:06:23", "2020-08-08 12:06:23", "2020-08-08 12…
+    ## $ game_id  <chr> "1596882299934232064", "1596882299934232064", "1596882299934…
+    ## $ time     <chr> "2020-08-08 12:24:59", "2020-08-08 12:24:59", "2020-08-08 12…
     ## $ name     <chr> "caller", "radnom", "potman", "folder", "caller", "radnom", …
-    ## $ credit   <dbl> 100, 100, 100, 100, 99, 98, 96, 96, 96, 91, 91, 91, 80, 80, …
-    ## $ bb       <dbl> 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-    ## $ seat_id  <int> 1, 2, 3, 4, 1, 2, 1, 3, 1, 1, 3, 1, 1, 3, 1
-    ## $ position <int> 1, 2, 3, 4, 1, 2, 1, 3, 1, 1, 3, 1, 1, 3, 1
-    ## $ state    <dbl> 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4
-    ## $ chips    <dbl> 1, 2, 4, 0, 3, 0, 0, 5, 5, 0, 11, 11, 0, 15, 15
-    ## $ to_call  <dbl> 2, 2, 2, 4, 3, 2, 0, 0, 5, 0, 0, 11, 0, 0, 15
-    ## $ s_stake  <dbl> 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    ## $ t_stake  <dbl> 0, 0, 0, 0, 1, 2, 4, 4, 4, 9, 9, 9, 20, 20, 20
-    ## $ pot      <dbl> 0, 0, 3, 7, 7, 10, 10, 10, 15, 20, 20, 31, 42, 42, 57
-    ## $ allin    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    ## $ folded   <dbl> 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    ## $ n_player <int> 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
-    ## $ n_in     <dbl> 4, 4, 4, 4, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2
-    ## $ hand     <chr> "", "", "KS KD", "2C 9D", "10D 9C", "AD 8H", "10D 9C", "KS K…
-    ## $ board    <chr> "", "", "", "", "", "", "10C 4S 3C", "10C 4S 3C", "10C 4S 3C…
-    ## $ action   <chr> "sb", "bb", "raise", "fold", "call", "fold", "check", "raise…
-    ## $ stake    <dbl> 1, 2, 4, 0, 3, 0, 0, 5, 5, 0, 11, 11, 0, 15, 15
-    ## $ t_stake_ <dbl> 1, 2, 4, 0, 4, 2, 4, 9, 9, 9, 20, 20, 20, 35, 35
-    ## $ s_stake_ <dbl> 1, 2, 4, 0, 4, 2, 0, 5, 5, 0, 11, 11, 0, 15, 15
-    ## $ credit_  <dbl> 99, 98, 96, 100, 96, 98, 96, 91, 91, 91, 80, 80, 80, 65, 65
-    ## $ pot_     <dbl> 1, 2, 7, 7, 10, 10, 10, 15, 20, 20, 31, 42, 42, 57, 72
-    ## $ runout   <chr> "10C 4S 3C 5H 6S", "10C 4S 3C 5H 6S", "10C 4S 3C 5H 6S", "10…
-    ## $ winner   <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    ## $ rank     <int> 3, 4, 2, 1, 3, 4, 3, 2, 3, 3, 2, 3, 3, 2, 3
-    ## $ ret      <dbl> 0, 0, 72, 0, 0, 0, 0, 72, 0, 0, 72, 0, 0, 72, 0
-    ## $ net      <dbl> -35, -2, 37, 0, -35, -2, -35, 37, -35, -35, 37, -35, -35, 37…
+    ## $ credit   <dbl> 100, 100, 100, 100, 99, 98, 98, 88, 88, 88, 88
+    ## $ bb       <dbl> 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+    ## $ seat_id  <int> 1, 2, 3, 4, 1, 2, 1, 1, 2, 1, 2
+    ## $ position <int> 1, 2, 3, 4, 1, 2, 1, 1, 2, 1, 2
+    ## $ state    <dbl> 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3
+    ## $ chips    <dbl> 1, 2, 0, 0, 1, 10, 10, 0, 0, 0, 0
+    ## $ to_call  <dbl> 2, 2, 2, 2, 1, 0, 10, 0, 0, 0, 0
+    ## $ s_stake  <dbl> 0, 0, 0, 0, 1, 2, 2, 0, 0, 0, 0
+    ## $ t_stake  <dbl> 0, 0, 0, 0, 1, 2, 2, 12, 12, 12, 12
+    ## $ pot      <dbl> 0, 0, 3, 3, 3, 4, 14, 24, 24, 24, 24
+    ## $ allin    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ## $ folded   <dbl> 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1
+    ## $ n_player <int> 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+    ## $ n_in     <dbl> 4, 4, 4, 3, 2, 2, 2, 2, 2, 2, 2
+    ## $ hand     <chr> "", "", "KC 8H", "JC 2D", "QH 9C", "3C 5S", "QH 9C", "QH 9C"…
+    ## $ board    <chr> "", "", "", "", "", "", "", "QS 10H 4H", "QS 10H 4H", "QS 10…
+    ## $ action   <chr> "sb", "bb", "fold", "fold", "call", "raise", "call", "check"…
+    ## $ stake    <dbl> 1, 2, 0, 0, 1, 10, 10, 0, 0, 0, 0
+    ## $ t_stake_ <dbl> 1, 2, 0, 0, 2, 12, 12, 12, 12, 12, 12
+    ## $ s_stake_ <dbl> 1, 2, 0, 0, 2, 12, 12, 0, 0, 0, 0
+    ## $ credit_  <dbl> 99, 98, 100, 100, 98, 88, 88, 88, 88, 88, 88
+    ## $ pot_     <dbl> 1, 2, 3, 3, 4, 14, 24, 24, 24, 24, 24
+    ## $ runout   <chr> "QS 10H 4H 9S", "QS 10H 4H 9S", "QS 10H 4H 9S", "QS 10H 4H 9…
+    ## $ winner   <dbl> 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0
+    ## $ rank     <dbl> 1, 2, 2, 2, 1, 2, 1, 1, 2, 1, 2
+    ## $ ret      <dbl> 24, 0, 0, 0, 24, 0, 24, 24, 0, 24, 0
+    ## $ net      <dbl> 12, -12, 0, 0, 12, -12, 12, 12, -12, 12, -12
 
 Similarily a tournament can be set up.
 
@@ -216,9 +216,9 @@ pay_network %>%
 ## Main Dependencies
 
   - `Poker`: generic R poker hand evaluator
-  - `Plumber`: serving a local poker server
+  - `tidyvrse`: everything else
   - `R6`: class management
-  - `Tidyvrse`: everything else
+  - `plumber`: serving a local poker server
 
 ## Unit Testing
 
@@ -233,19 +233,19 @@ testthat::test_package("pokerena")
 
 ### Engine
 
-  - \[x\] support going allin
   - \[x\] poker hand evaluation
+  - \[x\] support going allin
   - \[x\] multiple split and side pots
   - \[x\] tournament flow
   - \[ \] log messages for debugging
   - \[ \] unit tests for more situations
   - \[ \] improved cli output
+  - \[ \] support replay for (MC) simulations
 
 ### AI
 
   - \[ \] RL script with replay buffer
-  - \[ \] support for multiplayer self-play
-  - \[ \] support replay for MCCFR
+  - \[ \] control flow for multiplayer self-play
   - \[ \] tree search and pruning
 
 ### Analytics

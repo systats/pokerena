@@ -10,11 +10,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Packages
 
+* Poker UI https://www.youtube.com/watch?v=iTauEYc3dJ0
+* https://github.com/allenfrostline/Poker
+* https://github.com/buhrmi/svelte-poker
+
+
 ```{r}
 # devtools::install_github("tidyverse/dplyr")
 pacman::p_load(tidyverse, purrr, tidyr, crayon)
 devtools::document()
 devtools::load_all()
+# devtools::install()
 
 # usethis::use_testthat()
 # usethis::use_test("02-splitpot")
@@ -27,23 +33,50 @@ testthat::test_package("pokerena")
 
 
 
+```{r}
+req <- httr::GET(url = "http://0.0.0.0:8000/registered")
+d <- jsonlite::fromJSON(rawToChar(req$content))
+d
+```
+
+```{r}
+rstudioapi::jobRunScript("jobs/job_server_api.R", workingDir = ".")
+
+players <- rbind(
+  dplyr::tibble(name = "fish1", fun = "pokerena::player_fish"),
+  dplyr::tibble(name = "fish2", fun = "pokerena::player_random")
+)
+req <- httr::POST(url = "http://0.0.0.0:8000/register", body = players, encode = "json")
+
+config <- tibble(
+  credit = 100, # inital stack size, if NULL assumes individual credits
+  max_round = 10, # how many rounds at max should be played
+  bb = 2, # inital big blind
+  bb_round = 10, # increase blinds after x hands
+  bb_slope = "linear" # how to increase blinds
+)
+
+req <- httr::POST(url = "http://0.0.0.0:8000/start", body = config, encode = "json")
+
+jsonlite::fromJSON(rawToChar(req$content))
+```
+
+
+
+
 ## Players
 
 ```{r}
+devtools::load_all()
 players <- rbind(
-  tibble(name = "fish1", fun = list(player_fish)),
-  tibble(name = "fish2", fun = list(player_fish)),
-  tibble(name = "fish3", fun = list(player_allin)),
-  tibble(name = "potman", fun = list(player_api))
+  tibble(name = "AA", fun = list(player_allin)),
+  tibble(name = "BB", fun = list(player_allin))
+  #tibble(name = "potman", fun = list(player_api))
   #tibble(name = "me", fun = list(player_random))
-) %>% mutate(credit = c(50, 50, 100, 100), bb = 2)
+) %>% mutate(credit = c(100, 100), bb = 2)
 
 p_game <- game$new(players, delay = 0)
 p_game$run(verbose = T)
-p_game$admin$this_task()
-p_game$session %>% glimpse
-p_game$events %>% glimpse
-p_game$result
 # p_game$admin$history
 # p_game$session
 p_game$events %>% View
@@ -63,7 +96,7 @@ player_app <- function(state_, ...){
 
 players <- rbind(
   tibble(name = "random", fun = list(player_random)),
-  tibble(name = "random2", fun = list(player_random)),
+  tibble(name = "random2", fun = list(player_r)),
   tibble(name = "me", fun = list(player_app))
 ) %>% mutate(credit = 100, bb = 2)
 
@@ -99,7 +132,7 @@ p_game$session
 players <- rbind(
   tibble(name = "caller", fun = list(player_call)),
   tibble(name = "random", fun = list(player_random)),
-  tibble(name = "potman", fun = list(player_api)),
+  tibble(name = "potman", fun = list(player_random)),
   tibble(name = "folder", fun = list(player_fold))
 )
 

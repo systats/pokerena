@@ -4,7 +4,7 @@
 \alias{player_fish}
 \title{player_fish}
 \usage{
-player_fish(state_, ...)
+player_fish(s, ...)
 }
 \description{
 player_fish

@@ -31,6 +31,12 @@ game <- R6::R6Class("poker_game",
        self$init_session()
 
     },
+    
+    vali_actions = function(state){
+      actions <- c("fold", ifelse(state$to_call == 0, "check", "call"))
+      if(state$credit > state$to_call & length(unique(self$query)) > 1) actions <- c(actions, "raise", "allin")
+      return(actions)
+    },
 
     validate_action = function(){
       a_ <- self$event
@@ -47,11 +53,10 @@ game <- R6::R6Class("poker_game",
       ### 4: if previous raise -> raise > bb -> fold
       if(a_$to_call > 0 & a_$action == "raise" & a_$chips < (a_$to_call + a_$bb)) self$event$action <- "fold"
 
-
       ### correct chips
-      if(a_$action %in% c("check", "fold")) self$event$chips <- 0
       if(a_$action == "call") self$event$chips <- a_$to_call
       if(a_$action == "call" & a_$to_call > a_$credit) self$event$chips <- a_$credit
+      if(a_$action %in% c("check", "fold")) self$event$chips <- 0
     },
 
 
@@ -95,14 +100,18 @@ game <- R6::R6Class("poker_game",
 
       self$add_name_value(.name, "t_stake", latest$chips)
       self$add_name_value(.name, "s_stake", latest$chips)
-
       self$sub_name_value(.name, "credit", latest$chips)
 
       self$session$pot <- self$session$pot[1] + latest$chips
       self$session$to_call <- (max(self$session$t_stake) - (self$session$t_stake))
       self$session$to_call <- ifelse(self$session$allin == 1, 0, self$session$to_call)
-      # if(latest$allin == 1) self$set_name_value(.name, "to_call", 0)
-
+      
+      if(latest$allin == 1) self$set_name_value(.name, "to_call", 0)
+      if(latest$folded == 1) self$set_name_value(.name, "to_call", 0)
+      
+      self$session$event_id <- self$session$event_id + 1
+      self$add_name_value(.name, "action_id", 1)
+      
       self$next_player()
       self$input <- NULL
 
@@ -115,8 +124,8 @@ game <- R6::R6Class("poker_game",
         self$query <- self$query %>% purrr::discard(~.x == .name)
       }
 
-      readr::write_rds(self$session, path = "data/session.rds")
-      readr::write_rds(self$events, path = "data/events.rds")
+      #readr::write_rds(self$session, path = "data/session.rds")
+      #readr::write_rds(self$events, path = "data/events.rds")
     },
 
     get_action = function() {
@@ -146,7 +155,12 @@ game <- R6::R6Class("poker_game",
 
     decide_next = function(stop){
 
+      if(nrow(self$session) < 2){
+        self$admin$finalize()
+        return(T)
+      }
       sess <- self$session %>% dplyr::filter(folded == 0) #%>% glimpse
+
       last_states <- self$events %>% filter(state == max(state))
 
       NO_BILLS <- sum(sess$to_call) == 0
@@ -258,8 +272,8 @@ game <- R6::R6Class("poker_game",
       self$events <- self$events %>%
         dplyr::left_join(self$session %>% dplyr::select(name, winner, rank, ret, net), by = "name")
 
-      readr::write_rds(self$session, path = "data/session.rds")
-      readr::write_rds(self$events, path = "data/events.rds")
+      # readr::write_rds(self$session, path = "data/session.rds")
+      # readr::write_rds(self$events, path = "data/events.rds")
 
       # winner <- self$events %>% dplyr::filter(winner == 1) %>% tail(1)
       # cli::cli_alert_success("winner is {winner$name} who collects {winner[['ret']]} chips {winner$net} net return")
@@ -283,8 +297,8 @@ game <- R6::R6Class("poker_game",
       if(self$admin$this_task()$state == 1){
         if(self$admin$this_task()$task == "preflop_deal"){
           self$deal_preflop()
-          readr::write_rds(self$session, path = "data/session.rds")
-          readr::write_rds(self$events, path = "data/events.rds")
+          # readr::write_rds(self$session, path = "data/session.rds")
+          # readr::write_rds(self$events, path = "data/events.rds")
           self$admin$next_task()
         }
         if(self$admin$this_task()$task == "preflop_action"){

@@ -4,7 +4,7 @@
 \alias{player_app}
 \title{player_app}
 \usage{
-player_app(state_, ...)
+player_app(s, ...)
 }
 \description{
 player_app

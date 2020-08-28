@@ -4,7 +4,7 @@
 \alias{player_raise}
 \title{player_raise}
 \usage{
-player_raise(state_, ...)
+player_raise(s, ...)
 }
 \description{
 player_raise

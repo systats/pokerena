@@ -1,47 +1,49 @@
 #' player_fold
 #' @export
-player_fold <- function(state_, ...){
+player_fold <- function(s, ...){
   return(dplyr::tibble(chips = 0, action = "fold"))
 }
 
 #' player_fish
 #' @export
-player_fish <- function(state_, ...){
-  return(dplyr::tibble(chips = state_$to_call, action = "call"))
+player_fish <- function(s, ...){
+  return(dplyr::tibble(chips = s$to_call, action = "call"))
 }
 
 #' player_call
 #' @export
-player_call <- function(state_, ...){
-  return(dplyr::tibble(chips = state_$to_call, action = "call"))
+player_call <- function(s, ...){
+  return(dplyr::tibble(chips = s$to_call, action = "call"))
 }
 
 #' player_raise
 #' @export
-player_raise <- function(state_, ...){
-  return(dplyr::tibble(chips = state_$to_call + 5, action = "raise"))
+player_raise <- function(s, ...){
+  return(dplyr::tibble(chips = s$to_call + 5, action = "raise"))
 }
 
 #' player_allin
 #' @export
-player_allin <- function(state_, ...){
-  return(dplyr::tibble(chips = state_$credit, action = "raise"))
+player_allin <- function(s, ...){
+  return(dplyr::tibble(chips = s$credit, action = "raise"))
 }
 
 #' player_random
 #' @export
-player_random <- function(state_, ...){
+player_random <- function(s, ...){
   action <- sample(c("fold", "call", "raise"), 1)
   chips <- 0
   if(action == "raise") chips <- 10
+  if(s$to_call == 0) action <- "call"
+  
   return(dplyr::tibble(chips, action))
 }
 
 #' player_promt
 #' @export
-player_promt <- function(state_, ...){
+player_promt <- function(s, ...){
 
-  dplyr::glimpse(state_)
+  dplyr::glimpse(s)
 
   action <- menu(c("fold", "call", "raise"), title = "What action to perform?")
 
@@ -50,7 +52,7 @@ player_promt <- function(state_, ...){
     chips <- as.numeric(readline("How much raise?"))
   } else if(action == 2){
     action <- "call"
-    chips <- state_$to_call
+    chips <- s$to_call
   } else {
     action <- "fold"
     chips <- 0
@@ -61,7 +63,7 @@ player_promt <- function(state_, ...){
 
 #' player_app
 #' @export
-player_app <- function(state_, ...){
+player_app <- function(s, ...){
   params <- list(...)
   inp <- params$input
   if(is.null(inp)) stop("wait for user input")
@@ -70,9 +72,9 @@ player_app <- function(state_, ...){
 
 #' player_api
 #' @export
-player_api <- function(state_, ...){
+player_api <- function(s, ...){
 
-  req <- httr::POST(url = "http://213.152.100.65:3838/our_bots", body = list(name = "potman", data = state_), encode = "json")
+  req <- httr::POST(url = "http://213.152.100.65:3838/our_bots", body = list(name = "potman", data = s), encode = "json")
 
   if(req$status_code == 500) stop("Bot action could not be retrieved")
 

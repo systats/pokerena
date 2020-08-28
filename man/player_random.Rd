@@ -4,7 +4,7 @@
 \alias{player_random}
 \title{player_random}
 \usage{
-player_random(state_, ...)
+player_random(s, ...)
 }
 \description{
 player_random

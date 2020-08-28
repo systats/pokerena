@@ -72,7 +72,8 @@ tournament <- R6::R6Class("poker_tournament",
         if(nrow(self$players) < 2) self$N_ROUND <- self$config$max_round + 1
 
         ### increase  blind levels
-        if(self$N_ROUND %% self$config$bb_round == 0) self$increase_blinds()
+        if(!is.null(self$config$bb_round)) if(self$N_ROUND %% self$config$bb_round == 0) self$increase_blinds()
+        
         self$players$bb <- self$BB
 
         self$rotate_dealer()

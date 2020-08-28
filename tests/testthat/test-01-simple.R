@@ -19,8 +19,8 @@ test_that("2 player folding only", {
 test_that("2 player checking only", {
 
   players <- rbind(
-    tibble(name = "fish", fun = list(player_fish)),
-    tibble(name = "fish2", fun = list(player_fish))
+    tibble(name = "AA", fun = list(player_fish)),
+    tibble(name = "BB", fun = list(player_fish))
   ) %>% mutate(credit = 100, bb = 2)
 
   g <- game$new(players, delay = 0)
@@ -48,6 +48,22 @@ test_that("3 player checking only", {
   expect_equal(max(g$events$pot), 6)
 })
 
+
+test_that("3 player raise fold fold", {
+  
+  players <- rbind(
+    tibble(name = "AA", fun = list(player_fold)),
+    tibble(name = "BB", fun = list(player_fold)),
+    tibble(name = "CC", fun = list(player_raise))
+  ) %>% mutate(credit = 100, bb = 2)
+  
+  g <- game$new(players, delay = 0)
+  g$run(verbose = F)
+  
+  #g$events %>% View
+  expect_equal(nrow(g$events), 5)
+  expect_equal(max(g$events$pot), 10)
+})
 
 
 test_that("2 player allin", {

@@ -77,7 +77,7 @@ config <- list(
   credit = 100, # inital stack size, if NULL assumes individual credits
   max_round = 50, # how many rounds at max should be played
   bb = 2, # inital big blind
-  bb_rounds = 10, # increase blinds after x hands
+  bb_round = 10, # increase blinds after x hands
   bb_slope = "linear" # how to increase blinds
 )
 
@@ -141,7 +141,7 @@ ranges %>%
   ggplot(aes(value1, value2, fill = n)) +
   geom_tile(alpha = .7) +
   scale_fill_viridis_c() +
-  facet_wrap(~name) #, scales = "free_y" 
+  facet_wrap(~name)
 ```
 
 
@@ -163,7 +163,6 @@ pay_network <- tourn$games %>%
 pay_network %>% 
   ggraph(layout = 'linear') + #, circular = TRUE
   geom_edge_arc0(aes(colour = net), arrow = arrow(length = unit(4, 'mm')), width = 1, alpha = .8) +
-  #scale_edge_alpha('Pay direction', guide = 'edge_direction') + 
   scale_edge_color_viridis(direction = -1) +
   geom_node_text(aes(label = name))
 ```
@@ -172,9 +171,10 @@ pay_network %>%
 ## Main Dependencies
 
 * `Poker`: generic R poker hand evaluator
-* `Plumber`: serving a local poker server
+* `tidyvrse`: everything else 
 * `R6`: class management 
-* `Tidyvrse`: everything else 
+* `plumber`: serving a local poker server
+
 
 ## Unit Testing
 
@@ -187,22 +187,21 @@ testthat::test_package("pokerena")
 
 ### Engine
 
-- [x] support going allin 
 - [x] poker hand evaluation
+- [x] support going allin 
 - [x] multiple split and side pots
 - [x] tournament flow
 - [ ] log messages for debugging
 - [ ] unit tests for more situations
 - [ ] improved cli output
+- [ ] support replay for (MC) simulations
 
 
 ### AI
 
 - [ ] RL script with replay buffer
-- [ ] support for multiplayer self-play
-- [ ] support replay for MCCFR
+- [ ] control flow for multiplayer self-play
 - [ ] tree search and pruning
-
 
 ### Analytics
 

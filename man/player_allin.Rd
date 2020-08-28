@@ -4,7 +4,7 @@
 \alias{player_allin}
 \title{player_allin}
 \usage{
-player_allin(state_, ...)
+player_allin(s, ...)
 }
 \description{
 player_allin

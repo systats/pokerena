@@ -4,7 +4,7 @@
 \alias{player_fold}
 \title{player_fold}
 \usage{
-player_fold(state_, ...)
+player_fold(s, ...)
 }
 \description{
 player_fold

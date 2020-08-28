@@ -11,7 +11,7 @@ split_pots <- function(sess){
     dplyr::filter(folded == 0) %>%
     dplyr::arrange(t_stake) %>%
     dplyr::mutate(
-      pot_1st = min(t_stake),
+      pot_1st = min(t_stake, na.rm = T),
       pot_2nd = t_stake - pot_1st,
       pot_3rd = t_stake - (pot_1st + pot_2nd),
       pot_4th = t_stake - (pot_1st + pot_2nd + pot_3rd)
@@ -31,13 +31,8 @@ map_pots <- function(pots){
     dplyr::filter(value > 0) %>%
     split(.$pot) %>%
     purrr::map_dfr(~{
-      prize <- .x %>%
-
-        dplyr::filter(rank == min(rank, na.rm = T))
-      if(nrow(prize) > 1){
-        ### split pots
-        prize <- prize %>% dplyr::mutate(value = value/nrow(prize))
-      }
+      prize <- .x %>% dplyr::filter(rank == min(rank, na.rm = T))
+      if(nrow(prize) > 1) prize <- prize %>% dplyr::mutate(value = value/nrow(prize)) # SPLIT POT
       return(prize)
     })
 }
