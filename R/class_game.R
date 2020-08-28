@@ -79,7 +79,7 @@ game <- R6::R6Class("poker_game",
           raise = crayon::red,
           allin = crayon::red
         )
-        cat("\n" %+% ph %+% "\t" %+% action_color(self$event$action), glue::glue("{self$event$chips} {self$event$to_call} {self$event$pot} \t {self$event$hand} {self$event$board}"))
+        cat(ph %+% "\t" %+% action_color(self$event$action), glue::glue("{self$event$chips} {self$event$to_call} {self$event$pot} \t {self$event$hand} {self$event$board}") %+% "\n")
       }
 
       self$events <- dplyr::bind_rows(self$events, self$event) %>%
@@ -264,6 +264,8 @@ game <- R6::R6Class("poker_game",
 
     finalize = function(){
 
+      if(!is.null(self$events$winner)) return()
+      
       ### Find Winners
       self$set_winner()
 
@@ -277,9 +279,10 @@ game <- R6::R6Class("poker_game",
       # readr::write_rds(self$events, path = "data/events.rds")
 
       winner <- self$events %>% dplyr::filter(winner == 1) %>% tail(1)
-      cli::cli_alert_success("winner is {winner$name} who collects {winner[['ret']]} chips ({winner$net} net return)")
+      if(nrow(winner) == 0) cli::cli_alert_success("winner is {winner$name} who collects {winner[['ret']]} chips ({winner$net} net return)")
 
       self$result <- self$players %>% dplyr::left_join(self$session %>% dplyr::select(name, winner, rank, ret, net), by = "name")
+      glimpse(self$result)
       self$players <- self$result %>% dplyr::transmute(name, fun, credit = credit + net)
       self$result <- self$result %>% dplyr::select(-fun)
 
