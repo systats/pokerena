@@ -282,7 +282,6 @@ game <- R6::R6Class("poker_game",
       if(nrow(winner) == 0) cli::cli_alert_success("winner is {winner$name} who collects {winner[['ret']]} chips ({winner$net} net return)")
 
       self$result <- self$players %>% dplyr::left_join(self$session %>% dplyr::select(name, winner, rank, ret, net), by = "name")
-      glimpse(self$result)
       self$players <- self$result %>% dplyr::transmute(name, fun, credit = credit + net)
       self$result <- self$result %>% dplyr::select(-fun)
 
