@@ -69,8 +69,8 @@ jsonlite::fromJSON(rawToChar(req$content))
 ```{r}
 devtools::load_all()
 players <- rbind(
-  tibble(name = "AA", fun = list(player_allin)),
-  tibble(name = "BB", fun = list(player_allin))
+  tibble(name = "AA", fun = list(player_fold)),
+  tibble(name = "BB", fun = list(player_fold))
   #tibble(name = "potman", fun = list(player_api))
   #tibble(name = "me", fun = list(player_random))
 ) %>% mutate(credit = c(100, 100), bb = 2)

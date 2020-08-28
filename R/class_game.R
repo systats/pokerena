@@ -21,7 +21,7 @@ game <- R6::R6Class("poker_game",
     deck = NULL,
     query = NULL,
     delay = 0,
-    verbose = F,
+    verbose = T,
 
     initialize = function(players, delay = 0){
 
@@ -62,7 +62,7 @@ game <- R6::R6Class("poker_game",
 
     bind_action = function(.name){
 
-      if(self$delay > 0) Sys.sleep(runif(1, 1, self$delay))
+      # if(self$delay > 0) Sys.sleep(runif(1, 1, self$delay))
 
       if(self$verbose){
         # cli::cli_alert_info("{paste0(.name, rep())} \t p{self$event$position} {self$event$action} {self$event$chips} {self$event$to_call} {self$event$pot} {self$event$hand} {self$event$board}")
@@ -77,8 +77,9 @@ game <- R6::R6Class("poker_game",
           call = crayon::green,
           check = crayon::green,
           raise = crayon::red,
+          allin = crayon::red
         )
-        cat(ph %+% "\t" %+% action_color(self$event$action), glue::glue("{self$event$chips} {self$event$to_call} {self$event$pot} \t {self$event$hand} {self$event$board}") %+% "\n")
+        cat("\n" %+% ph %+% "\t" %+% action_color(self$event$action), glue::glue("{self$event$chips} {self$event$to_call} {self$event$pot} \t {self$event$hand} {self$event$board}"))
       }
 
       self$events <- dplyr::bind_rows(self$events, self$event) %>%
@@ -275,8 +276,8 @@ game <- R6::R6Class("poker_game",
       # readr::write_rds(self$session, path = "data/session.rds")
       # readr::write_rds(self$events, path = "data/events.rds")
 
-      # winner <- self$events %>% dplyr::filter(winner == 1) %>% tail(1)
-      # cli::cli_alert_success("winner is {winner$name} who collects {winner[['ret']]} chips {winner$net} net return")
+      winner <- self$events %>% dplyr::filter(winner == 1) %>% tail(1)
+      cli::cli_alert_success("winner is {winner$name} who collects {winner[['ret']]} chips ({winner$net} net return)")
 
       self$result <- self$players %>% dplyr::left_join(self$session %>% dplyr::select(name, winner, rank, ret, net), by = "name")
       self$players <- self$result %>% dplyr::transmute(name, fun, credit = credit + net)
