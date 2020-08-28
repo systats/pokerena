@@ -268,7 +268,7 @@ game <- R6::R6Class("poker_game",
       
       ### Find Winners
       self$set_winner()
-
+      
       ### Allocate Pots for multiple players at showdown
       self$set_pots()
 
@@ -279,7 +279,7 @@ game <- R6::R6Class("poker_game",
       # readr::write_rds(self$events, path = "data/events.rds")
 
       winner <- self$events %>% dplyr::filter(winner == 1) %>% tail(1)
-      if(nrow(winner) == 0) cli::cli_alert_success("winner is {winner$name} who collects {winner[['ret']]} chips ({winner$net} net return)")
+      if(nrow(winner) > 0) cli::cli_alert_success("winner is {winner$name} who collects {winner[['ret']]} chips ({winner$net} net return)")
 
       self$result <- self$players %>% dplyr::left_join(self$session %>% dplyr::select(name, winner, rank, ret, net), by = "name")
       self$players <- self$result %>% dplyr::transmute(name, fun, credit = credit + net)
