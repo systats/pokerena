@@ -69,8 +69,8 @@ jsonlite::fromJSON(rawToChar(req$content))
 ```{r}
 devtools::load_all()
 players <- rbind(
-  tibble(name = "AA", fun = list(player_random)),
-  tibble(name = "BB", fun = list(player_random))
+  tibble(name = "AA", fun = list(player_fold)),
+  tibble(name = "BB", fun = list(player_fold))
   #tibble(name = "potman", fun = list(player_api))
   #tibble(name = "me", fun = list(player_random))
 ) %>% mutate(credit = c(100, 100), bb = 2)
@@ -96,12 +96,15 @@ player_app <- function(state_, ...){
 
 players <- rbind(
   tibble(name = "random", fun = list(player_random)),
-  tibble(name = "random2", fun = list(player_r)),
-  tibble(name = "me", fun = list(player_app))
+  tibble(name = "random2", fun = list(player_random)),
+  tibble(name = "me", fun = list(player_api))
 ) %>% mutate(credit = 100, bb = 2)
 
 p_game <- game$new(players, delay = 0)
-p_game$step()
+p_game$run()
+p_game$events
+
+
 p_game$set_input <- dplyr::tibble(chips = 10, action = "raise")
 p_game$step()
 # p_game$get_state("me")

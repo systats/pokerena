@@ -102,7 +102,10 @@ game <- R6::R6Class("poker_game",
       self$add_name_value(.name, "t_stake", latest$chips)
       self$add_name_value(.name, "s_stake", latest$chips)
       self$sub_name_value(.name, "credit", latest$chips)
-
+      
+      self$paste_name_value(.name, "my_actions", latest$action)
+      self$session$past_actions <- paste(self$session$past_actions, latest$action)
+      
       self$session$pot <- self$session$pot[1] + latest$chips
       self$session$to_call <- (max(self$session$t_stake) - (self$session$t_stake))
       self$session$to_call <- ifelse(self$session$allin == 1, 0, self$session$to_call)

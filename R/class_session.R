@@ -25,7 +25,8 @@ poker_session = R6::R6Class("session",
         allin = 0, folded = 0,
         n_player = dplyr::n(),
         n_in = dplyr::n(),
-        hand = "", board = ""
+        hand = "", board = "",
+        my_actions = "", past_actions = ""
       )
     },
 
@@ -70,7 +71,11 @@ poker_session = R6::R6Class("session",
     sub_name_value = function(.name, var, value){
       self$session[[var]][self$session$name == .name] <- self$session[[var]][self$session$name == .name] - value
     },
-
+    
+    paste_name_value = function(.name, var, value){
+      self$session[[var]][self$session$name == .name] <- paste(self$session[[var]][self$session$name == .name], value)
+    },
+    
     deal_pocket = function(){
       hands <- sample(Poker:::full_deck, nrow(self$players)*2)
       self$deck <- setdiff(Poker:::full_deck, hands)
@@ -108,12 +113,15 @@ poker_session = R6::R6Class("session",
       self$add_name_value(self$session$name[2], "s_stake", self$session$bb[2])
       self$sub_name_value(self$session$name[1], "credit", self$session$bb[1]/2)
       self$sub_name_value(self$session$name[2], "credit", self$session$bb[2])
+      
+      self$paste_name_value(self$session$name[1], "my_actions", "sb")
+      self$paste_name_value(self$session$name[2], "my_actions", "bb")
+      self$session$past_actions <- "sb bb"
 
       self$session$pot <- (self$session$bb[1]/2 + self$session$bb[1])
       self$session$to_call <- (max(self$session$t_stake_) - (self$session$t_stake))
       self$session$event_id <- 1
       self$session$action_id <- 1
-      
     },
 
     deal_preflop = function(){
