@@ -1,30 +1,3 @@
-#' value_dict
-#' @source me
-"value_dict"
-# value_dict <- dplyr::tibble(
-#   value = c("2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"),
-#   id = 1:13
-# )
-# usethis::use_data(value_dict)
-
-#' pair_ranks
-#' @source me
-"pair_ranks"
-# pair_ranks <- tidyr::expand_grid(
-#   card1 = Poker:::full_deck,
-#   card2 = Poker:::full_deck
-# ) %>%
-#   dplyr::filter(card1 != card2) %>%
-#   dplyr::mutate(value1 = stringr::str_remove(card1, ".$"), value2 = stringr::str_remove(card2, ".$")) %>%
-#   dplyr::mutate(suit1 = stringr::str_extract(card1, ".$"), suit2 = stringr::str_extract(card2, ".$")) %>%
-#   dplyr::mutate(pair = as.numeric(value1 == value2) * 100, suit = as.numeric(suit1 == suit2)) %>%
-#   dplyr::left_join(value_dict %>% dplyr::rename_all(~paste0(.x, 1))) %>%
-#   dplyr::left_join(value_dict %>% dplyr::rename_all(~paste0(.x, 2))) %>%
-#   dplyr::mutate(id_max = ifelse(id1 >= id2, id1, id2)) %>%
-#   dplyr::mutate(score = ifelse(pair, pair + id1 + id2, id_max)) %>%
-#   dplyr::arrange(dplyr::desc(score))
-# usethis::use_data(pair_ranks)
-
 #' get_starting_hands
 #' @export
 get_starting_hands <- function(n_player){
@@ -48,7 +21,7 @@ prep_rank_hand <- function(cards){
 get_pair_ranks <- function(.state){
   out<-.state %>%
     tidyr::separate(cards, sep = " ", into = c("card1", "card2"), remove = F) %>%
-    dplyr::left_join(pair_ranks, by = c("card1", "card2")) %>%
+    dplyr::left_join(pokerena::pairranks, by = c("card1", "card2")) %>%
     dplyr::transmute(
       cards,
       # outcome = "",
