@@ -1,13 +1,13 @@
 #' value_dict
 #' @export
-value_dict <- tibble(
+value_dict <- dplyr::tibble(
   value = c("2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"),
   id = 1:13
 )
 
 #' pair_ranks
 #' @export
-pair_ranks <- expand_grid(
+pair_ranks <- tidyr::expand_grid(
   card1 = Poker:::full_deck,
   card2 = Poker:::full_deck
 ) %>%
