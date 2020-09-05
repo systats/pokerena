@@ -25,7 +25,7 @@ poker_session = R6::R6Class("session",
         allin = 0, folded = 0,
         n_player = dplyr::n(),
         n_in = dplyr::n(),
-        hand = "", board = "",
+        hand = NA_character_, board = NA_character_,
         my_actions = "", past_actions = ""
       )
     },

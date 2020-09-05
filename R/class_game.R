@@ -308,7 +308,6 @@ game <- R6::R6Class("poker_game",
       self$verbose <- verbose
 
       if(self$admin$this_task()$state == 0){
-        self$set_blinds()
         self$admin$next_task()
       }
 
@@ -316,6 +315,7 @@ game <- R6::R6Class("poker_game",
       if(self$admin$this_task()$state == 1){
         if(self$admin$this_task()$task == "preflop_deal"){
           self$deal_preflop()
+          self$set_blinds()
           # readr::write_rds(self$session, path = "data/session.rds")
           # readr::write_rds(self$events, path = "data/events.rds")
           self$admin$next_task()

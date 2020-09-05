@@ -46,7 +46,7 @@ prep_rank_hand <- function(cards){
 get_pair_ranks <- function(.state){
   out<-.state %>%
     tidyr::separate(cards, sep = " ", into = c("card1", "card2"), remove = F) %>%
-    dplyr::left_join(pair_ranks, by = c("card1", "card2")) %>%
+    dplyr::left_join(pokerena::pair_ranks, by = c("card1", "card2")) %>%
     dplyr::transmute(
       cards,
       # outcome = "",
