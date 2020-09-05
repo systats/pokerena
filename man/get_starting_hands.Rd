@@ -2,10 +2,10 @@
 % Please edit documentation in R/eval_hands.R
 \name{get_starting_hands}
 \alias{get_starting_hands}
-\title{get_starting_hands}
+\title{value_dict}
 \usage{
 get_starting_hands(n_player)
 }
 \description{
-get_starting_hands
+value_dict
 }
