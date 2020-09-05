@@ -69,8 +69,8 @@ jsonlite::fromJSON(rawToChar(req$content))
 ```{r}
 devtools::load_all()
 players <- rbind(
-  tibble(name = "AA", fun = list(player_fold)),
-  tibble(name = "BB", fun = list(player_fold))
+  tibble(name = "AA", fun = list(player_raise)),
+  tibble(name = "BB", fun = list(player_call))
   #tibble(name = "potman", fun = list(player_api))
   #tibble(name = "me", fun = list(player_random))
 ) %>% mutate(credit = c(100, 100), bb = 2)
@@ -81,7 +81,7 @@ p_game$run(verbose = T)
 # p_game$session
 #sp_game$events %>% View
 p_game$result
-# p_game$players
+p_game$events %>% glimpse
 ```
 
 ### Break
@@ -102,6 +102,7 @@ players <- rbind(
 
 p_game <- game$new(players, delay = 0)
 p_game$run()
+
 p_game$events
 
 

@@ -212,11 +212,10 @@ game <- R6::R6Class("poker_game",
     eval_hands = function(){
       evals <- self$session %>%
         dplyr::filter(hand != "" & !is.na(hand)) %>%
-        dplyr::distinct(name, hand, runout) %>%
-        dplyr::mutate(out = stringr::str_split(glue::glue("{hand} {runout}"), " ") %>% purrr::map(get_parse_hand)) %>%
-        tidyr::unnest(out) %>%
+        dplyr::mutate(cards = stringr::str_squish(glue::glue("{hand} {runout}")), state = max(state)) %>% 
+        dplyr::distinct(name, state, cards) %>%
         get_hand_ranks() %>%
-        dplyr::transmute(name, main, winner, rank)
+        dplyr::transmute(name, winner, rank)
 
       self$session <- self$session %>% dplyr::left_join(evals, by = "name")
     },
@@ -277,6 +276,20 @@ game <- R6::R6Class("poker_game",
 
       self$events <- self$events %>%
         dplyr::left_join(self$session %>% dplyr::select(name, winner, rank, ret, net), by = "name")
+      
+      ### Add true state evaluation 
+      get_hand_ranks_pos <- purrr::possibly(get_hand_ranks, NULL)
+      
+      evals <- self$events %>%
+        dplyr::filter(hand != "" & !is.na(hand)) %>%
+        dplyr::transmute(seat_id, state, cards = stringr::str_squish(glue::glue("{hand} {board}"))) %>%
+        dplyr::distinct(seat_id, state, cards) %>% 
+        dplyr::group_split(state) %>%
+        purrr::map_dfr(get_hand_ranks_pos) %>%
+        dplyr::rename(state_winner = winner, state_rank = rank, state_main = main) %>% 
+        dplyr::select(-cards)
+      
+      self$events <- self$events %>% dplyr::left_join(evals, by = c("seat_id", "state"))
 
       # readr::write_rds(self$session, path = "data/session.rds")
       # readr::write_rds(self$events, path = "data/events.rds")
