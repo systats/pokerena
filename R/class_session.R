@@ -94,12 +94,12 @@ poker_session = R6::R6Class("session",
     reset_query = function(){
       sess <- self$session %>% dplyr::filter(allin == 0 & folded == 0)
       if(nrow(sess) < 2) return()
-      self$query <- c(sess$name, sess$name, sess$name, sess$name, sess$name)
+      self$query <- c(sess$name, sess$name, sess$name, sess$name, sess$name, sess$name, sess$name, sess$name)
     },
 
     init_query = function(){
       sess <- self$session
-      self$query <- c(sess$name[-(1:2)], sess$name, sess$name, sess$name, sess$name)
+      self$query <- c(sess$name[-(1:2)], sess$name, sess$name, sess$name, sess$name, sess$name, sess$name, sess$name, sess$name, sess$name)
     },
 
     set_blinds = function(){
